@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>MPG Predictor using mtcars</title>
+  <meta charset="utf-8">
+  <meta name="description" content="MPG Predictor using mtcars">
+  <meta name="author" content="bwright.projects">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>MPG Predictor using mtcars</h1>
+    <h2>Are the MPG listed for each car similar to the predicted MPG?</h2>
+    <p>bwright.projects<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Introduction</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div style='float:left;width:48%;' class='centered'>
+  <p>With all the news stories about car  manufactures using technology and other means to quote miles per gallon (mpg), a predictive tool can help you understand the mpg based Onondaga historic data and various models.  </p>
+
+<p>The MPG prediction app is one such app.  </p>
+
+<ul>
+<li>Use the latest technology to predict MPG</li>
+<li>Check the published MPG with a cacluated MPG</li>
+</ul>
+
+</div>
+<div style='float:right;width:48%;'>
+  <h3>Part 1: Shiny App</h3>
+
+<p>Using the mtcars data set to predict miles per gallon (MPG)</p>
+
+<p><em><a href="https://bwrightprojects.shinyapps.io/ddp_prj-mtcars/">https://bwrightprojects.shinyapps.io/ddp_prj-mtcars/</a></em></p>
+
+<p>Github Repo</p>
+
+<p><em><a href="https://github.com/bwrightprojects/ddp_prj-mtcars">https://github.com/bwrightprojects/ddp_prj-mtcars</a></em></p>
+
+<h3>Part 2: Reproducible Presentation</h3>
+
+<p><em><a href="http://bwrightprojects.github.io/ddp_prj-mtcars/index.html">http://bwrightprojects.github.io/ddp_prj-mtcars/index.html</a></em> </p>
+
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Dataset</h2>
+  </hgroup>
+  <article data-timings="">
+    <h3>Motor Trend Car Road Tests</h3>
+
+<p>The data was extracted from the 1974 Motor Trend US magazine, and comprises fuel consumption and 10 aspects of automobile design and performance for 32 automobiles (1973–74 models).</p>
+
+<h3>Source</h3>
+
+<p>Henderson and Velleman (1981), Building multiple regression models interactively. Biometrics, 37, 391–411.</p>
+
+<pre><code class="r">library(datasets)
+head(mtcars, 2)
+</code></pre>
+
+<pre><code>##               mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4      21   6  160 110  3.9 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag  21   6  160 110  3.9 2.875 17.02  0  1    4    4
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Format</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>A data frame with 32 observations on 11 variables.</p>
+
+<ol>
+<li><code>mpg</code> Miles/(US) gallon</li>
+<li><code>cyl</code> Number of cylinders </li>
+<li><code>disp</code> Displacement (cu.in.) </li>
+<li><code>hp</code> Gross horsepower </li>
+<li><code>drat</code> Rear axle ratio </li>
+<li><code>wt</code> Weight (lb/1000) </li>
+<li><code>qsec</code> 1/4 mile time </li>
+<li><code>vs</code> V-engine / Standard </li>
+<li><code>am</code> Transmission (0 = automatic, 1 = manual) </li>
+<li><code>gear</code> Number of forward gears </li>
+<li><code>carb</code> Number of carburetors </li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Reactive Server Code</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">#&#39; MPG Calculator
+#&#39; @param selected car
+#&#39; @return MPG
+#&#39;
+mpg_calc &lt;- function(selCar) {
+    # Subset data to one selected in ui.R
+    selectedCar &lt;- mtcars[selCar, ]
+
+    # load up a pediction dataset (pdDate) with subset data
+    pdData &lt;- data.frame(cyl = selectedCar$cyl, hp = selectedCar$hp, wt = selectedCar$wt, 
+        am = selectedCar$am, qsec = selectedCar$qsec)
+    pdData$am &lt;- factor(pdData$am)
+    pdData$cyl &lt;- factor(pdData$cyl)
+
+    # Use the linear model to predict the MPG for the selected car and return
+    mpg &lt;- 0
+    mpg &lt;- round(predict(fit, newdata = pdData), 2)
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Introduction'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Dataset'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Format'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Reactive Server Code'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+   
+  </html>

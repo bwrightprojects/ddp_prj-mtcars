@@ -19,7 +19,7 @@ A data frame with 32 observations on 11 variables.
 1. `carb` Number of carburetors 
 
 
-Source code is available on the [GitHub](https://github.com/bwrightprojects/ddp_prj-mtcars).
+Source code is available on the https://github.com/bwrightprojects/ddp_prj-mtcars (right clickd and open in a new tab/window)
 
 A simple and yet, possible bad linear regression model is used to predict the MPG based on the type of transmission (am), 1/4 mile time (qsec) and Weight (wt).  
 
